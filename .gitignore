@@ -1,0 +1,31 @@
+# Raw scraped transcript data — large, reproducible via src/ingest/*.py
+# and src/analyzer/fetch_latest.py, not source-controlled.
+data/raw/transcripts/
+data/raw/live_transcripts/
+
+# SQLite databases — derived/regeneratable via the scoring + analyzer
+# pipeline, not source-controlled. (site/ HTML output is generated from
+# these and is committed instead, since that's the actual deployable.)
+*.db
+*.db-journal
+
+# Secrets — no secret files exist in this repo today, but guard against
+# accidental future commits (API keys, tokens, local env overrides).
+.env
+.env.*
+*.pem
+*.key
+secrets.yaml
+secrets.yml
+
+# Local-only Claude Code settings (machine-specific permission grants,
+# not meant to be shared).
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store

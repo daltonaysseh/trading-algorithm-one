@@ -1,0 +1,96 @@
+{
+  "PBF": {
+    "sector": "Energy",
+    "composite_score": 42.3,
+    "cat_quality": 48.3,
+    "cat_growth": 11.1,
+    "cat_valuation": 63.9,
+    "cat_financial_health": 62.5,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "MTX": {
+    "sector": "Basic Materials",
+    "composite_score": 49.8,
+    "cat_quality": 55.2,
+    "cat_growth": 44.4,
+    "cat_valuation": 47.7,
+    "cat_financial_health": 50.0,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "SXI": {
+    "sector": "Industrials",
+    "composite_score": 60.4,
+    "cat_quality": 91.7,
+    "cat_growth": 52.8,
+    "cat_valuation": 8.3,
+    "cat_financial_health": 56.2,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "SCVL": {
+    "sector": "Consumer Cyclical",
+    "composite_score": 47.6,
+    "cat_quality": 49.0,
+    "cat_growth": 19.4,
+    "cat_valuation": 63.9,
+    "cat_financial_health": 75.0,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "JJSF": {
+    "sector": "Consumer Defensive",
+    "composite_score": 64.0,
+    "cat_quality": 45.8,
+    "cat_growth": 83.3,
+    "cat_valuation": 44.9,
+    "cat_financial_health": 81.2,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "USPH": {
+    "sector": "Healthcare",
+    "composite_score": 53.1,
+    "cat_quality": 54.9,
+    "cat_growth": 61.1,
+    "cat_valuation": 37.0,
+    "cat_financial_health": 50.0,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "WSFS": {
+    "sector": "Financial Services",
+    "composite_score": 54.2,
+    "cat_quality": 63.0,
+    "cat_growth": 80.6,
+    "cat_valuation": 53.5,
+    "cat_financial_health": null,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "CSGS": {
+    "not_computed": true,
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "SHEN": {
+    "sector": "Communication Services",
+    "composite_score": 53.7,
+    "cat_quality": 33.7,
+    "cat_growth": 100.0,
+    "cat_valuation": 54.6,
+    "cat_financial_health": 18.8,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  },
+  "UTL": {
+    "sector": "Utilities",
+    "composite_score": 42.7,
+    "cat_quality": 61.8,
+    "cat_growth": 50.0,
+    "cat_valuation": 31.9,
+    "cat_financial_health": 6.2,
+    "ranking_method": "whole_universe_fallback",
+    "computed_at": "2026-08-11T18:35:13.404503+00:00"
+  }
+}

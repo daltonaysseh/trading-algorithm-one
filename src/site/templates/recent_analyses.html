@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Recent Analyses{% endblock %}
+{% block content %}
+<h1>Recent analyses</h1>
+<p class="lede">The last {{ recent|length if recent else 0 }} tickers analyzed, newest first.</p>
+{% if recent %}
+<p class="section-note">
+  Color reflects communication clarity, not investment attractiveness — see
+  <a href="how-it-works.html">How It Works</a>.
+</p>
+
+<div class="analysis-grid">
+  {% for r in recent %}
+  {% set t = r.composite_score|tier(75, 60) %}
+  <a class="analysis-card" href="tickers/{{ r.ticker }}_{{ r.safe_quarter }}.html">
+    <div class="ac-ticker">{{ r.ticker }}</div>
+    {% if r.company %}<div class="ac-company">{{ r.company }}</div>{% endif %}
+    <div class="ac-composite strength-text-{{ t }}">
+      <span class="strength-dot strength-dot-{{ t }}"></span>{{ r.composite_score }}<span class="ac-max">/100</span>
+    </div>
+    <div class="ac-meta">
+      <span>{{ r.quarter_label or "—" }}</span>
+      <span>{{ r.analyzed_at[:10] }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="callout pending">
+  <span class="icon">&#9203;</span>
+  <h3>No analyses yet</h3>
+  <p class="section-note" style="margin: 0 auto;">
+    Nobody has analyzed a ticker in this session yet — ask Claude to analyze one
+    (e.g. "analyze PBF") to see a report here.
+  </p>
+</div>
+{% endif %}
+{% endblock %}

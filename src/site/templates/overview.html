@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1>What did management's tone actually say?</h1>
+<p class="lede">
+  Search a ticker to read its most recent earnings call scored across 5 communication
+  dimensions — how clearly they guided, how much they hedged, how directly they answered
+  questions, whether Q&amp;A matched the prepared script, and how they disclosed risk.
+</p>
+
+<div class="hero-search-section">
+  <div class="ticker-search">
+    <input type="text" placeholder="Search analyzed tickers…" autocomplete="off"
+           aria-label="Search analyzed tickers" aria-expanded="false" role="combobox">
+    <div class="ticker-search-panel" hidden></div>
+  </div>
+  <p class="hero-search-hint">
+    Not analyzed yet? Ask Claude in your session — e.g. "analyze PBF" — any ticker with a
+    public earnings call can be added.
+  </p>
+</div>
+
+<div class="callout">
+  <strong>This is not a trading signal.</strong> It doesn't predict stock price movement, it isn't
+  investment advice, and it hasn't been backtested against returns — it's a description of how a
+  call was communicated, not what the stock will do next. See <a href="limitations.html">Limitations</a>
+  for what this rubric hasn't been checked against.
+</div>
+
+<h2>How it works</h2>
+<ol class="methodology-list">
+  <li>Search any ticker (or ask Claude directly, e.g. "analyze PBF"). The tool finds that
+    company's most recent earnings call.</li>
+  <li>The transcript is split into prepared remarks and live Q&amp;A.</li>
+  <li>Each section is read and scored on 5 dimensions (see <a href="rubric.html">Rubric</a>), with
+    a specific excerpt kept as evidence for the most notable score.</li>
+  <li>Prepared-remarks tone is explicitly compared to Q&amp;A tone — a confident script paired with
+    an evasive Q&amp;A is exactly the kind of divergence this is built to surface.</li>
+  <li>Results are cached, so re-analyzing the same call is instant, and a history builds up per
+    ticker as more of its calls get analyzed.</li>
+</ol>
+<p class="section-note">
+  For a deeper explanation of what each dimension measures, why it matters, and real examples
+  from analyzed calls, see <a href="how-it-works.html">How It Works</a>.
+</p>
+
+<p class="section-note">
+  {{ stats.analyzed_ticker_count }} ticker{{ 's' if stats.analyzed_ticker_count != 1 }} analyzed,
+  {{ stats.analyzed_call_count }} call{{ 's' if stats.analyzed_call_count != 1 }} total so far —
+  see <a href="recent-analyses.html">Recent Analyses</a>, or <a href="rubric.html">Rubric</a> for
+  the 10 reference examples the scoring criteria were built and sharpened against.
+</p>
+{% endblock %}

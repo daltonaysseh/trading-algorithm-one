@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Rubric{% endblock %}
+{% block content %}
+<h1>The scoring rubric</h1>
+<p class="lede">
+  Every transcript is scored 0–100 on 5 independently-judged dimensions.
+  The overall "composite" score is just their average — it isn't a separate,
+  independently-judged number.
+</p>
+
+<div class="callout">
+  <strong>This rubric hasn't been independently audited at scale.</strong> It's adapted from an
+  earlier project that had no written scoring criteria at all, and its anchors were sharpened once
+  after real testing showed two dimensions weren't discriminating well (see
+  <a href="limitations.html">Limitations</a>). Treat every score as a structured first read of
+  communication style — not a validated, audited signal, and not a prediction of anything.
+</div>
+
+<div class="dim-grid">
+  {% for dim in dimensions %}
+  <div class="card">
+    <h3>{{ dim.label }}</h3>
+    <p class="section-note">{{ dim.plain_language }}</p>
+    {% set ex = examples[dim.key] %}
+    {% if ex %}
+    <div class="excerpt">
+      {{ ex.excerpt }}
+      <span class="speaker">{{ ex.speaker }} — {{ ex.ticker }} {{ ex.quarter }} · scored {{ ex.score }}/100 on this dimension</span>
+    </div>
+    <div class="why">{{ ex.why }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Anchor scale</h2>
+<p class="section-note">Each dimension is scored holistically against reference points, not a rigid formula:</p>
+<table>
+  <thead><tr><th>Score</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td class="num">~20</td><td>Poor / weak signal on this dimension</td></tr>
+    <tr><td class="num">~50</td><td>Neutral — no strong signal either way</td></tr>
+    <tr><td class="num">~80</td><td>Strong signal on this dimension</td></tr>
+  </tbody>
+</table>
+{% endblock %}

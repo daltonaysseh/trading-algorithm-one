@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}{{ call.ticker }} {{ call.quarter_label or call.call_date }} — Analysis{% endblock %}
+{% block content %}
+<p class="section-note"><a href="../recent-analyses.html">&larr; Recent analyses</a></p>
+<h1>{{ call.ticker }}{% if call.company %} <span style="color:var(--text-muted); font-weight:400;">— {{ call.company }}</span>{% endif %}</h1>
+<p class="lede">
+  {{ call.quarter_label or "Earnings call" }} · {{ call.call_date }}
+  {% if call.sector %}· {{ call.sector }}{% endif %}
+  · source: <a href="{{ call.call_url }}">{{ call.source }}</a>
+</p>
+
+{{ macros.score_legend() }}
+
+<!-- Tier 1: the score itself, largest element on the page -->
+<div class="card">
+  {{ macros.composite_hero(row.transcript_composite) }}
+  {{ macros.dimension_bars(row) }}
+</div>
+
+<!-- Tier 2: prepared-vs-Q&A divergence, the tool's signature check -->
+<h2>Prepared remarks vs. Q&amp;A</h2>
+<div class="card">
+  <p style="margin:0;">{{ call.divergence_note or "No divergence note recorded for this analysis." }}</p>
+</div>
+
+<!-- Tier 3: supporting excerpt, clearly evidence rather than the headline -->
+{% if row.evidence and row.evidence.excerpt %}
+<h2>Evidence</h2>
+{{ macros.evidence_card(row) }}
+{% endif %}
+
+<h2>History for {{ call.ticker }}</h2>
+{% if history|length > 1 %}
+<div class="card">
+  <svg viewBox="0 0 {{ 40 * (history|length - 1) + 40 }} 90" style="width:100%; max-width:480px; height:90px;" role="img" aria-label="Composite score trend">
+    <polyline fill="none" stroke="var(--accent)" stroke-width="2"
+      points="{% for h in history %}{{ 40 * loop.index0 + 20 }},{{ 80 - (h.composite_score * 0.7) }}{% if not loop.last %} {% endif %}{% endfor %}" />
+    {% for h in history %}
+    <circle cx="{{ 40 * loop.index0 + 20 }}" cy="{{ 80 - (h.composite_score * 0.7) }}" r="3" fill="var(--accent)">
+      <title>{{ h.quarter_label or h.call_date }}: {{ h.composite_score }}</title>
+    </circle>
+    {% endfor %}
+  </svg>
+  <p class="section-note">
+    {% for h in history %}{{ h.quarter_label or h.call_date }}: <b>{{ h.composite_score }}</b>{% if not loop.last %} &nbsp;→&nbsp; {% endif %}{% endfor %}
+  </p>
+</div>
+{% else %}
+<p class="section-note">First analysis for {{ call.ticker }} — no prior quarter to compare yet. Re-analyze after a future call to build a trend.</p>
+{% endif %}
+
+<div class="callout" style="margin-top:32px;">
+  <strong>Sentiment analysis for fundamental research.</strong> This is a communication-quality
+  assessment of how management spoke on this call — not a prediction of stock price movement,
+  not a buy/sell signal, and not investment advice. See <a href="../limitations.html">Limitations</a>
+  for what this rubric hasn't been checked against.
+</div>
+{% endblock %}

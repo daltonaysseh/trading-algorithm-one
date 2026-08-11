@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}Calibration Examples{% endblock %}
+{% block content %}
+<h1>Calibration examples</h1>
+<p class="lede">
+  {{ rows|length }} transcripts, hand-scored one per ticker to develop and sharpen the rubric
+  before it was used for live analysis. These aren't a searchable universe — they're the proof
+  that the rubric produces real discrimination (see the qa_directness/consistency fix in
+  <a href="limitations.html">Limitations</a>), kept here as reference examples. Every ticker is
+  analyzable live now — see the search box above. Composite-score color reflects communication
+  clarity, not investment attractiveness — see <a href="how-it-works.html">How It Works</a>.
+</p>
+
+<div style="margin-top:24px;">
+{% for row in rows %}
+<details class="ticker-row">
+  <summary>
+    <span class="summary-ticker">{{ row.ticker }}</span>
+    <span class="summary-quarter">{{ row.quarter }}</span>
+    {{ macros.score_summary_line(row) }}
+  </summary>
+  <div class="ticker-detail">
+    {{ macros.dimension_bars(row) }}
+    <div style="margin-top:14px;">
+      {{ macros.evidence_card(row) }}
+    </div>
+  </div>
+</details>
+{% endfor %}
+</div>
+{% endblock %}

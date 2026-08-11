@@ -1,0 +1,95 @@
+{% macro composite_hero(score) %}
+{% set t = score|tier(75, 60) %}
+<div class="composite-hero">
+  <div class="composite-hero-number strength-text-{{ t }}">{{ score|round(1) }}<span class="composite-hero-max">/100</span></div>
+  <div class="composite-hero-body">
+    <div class="composite-hero-label">Composite score</div>
+    <div class="composite-hero-track">
+      <div class="composite-hero-fill strength-fill-{{ t }}" style="width: {{ score }}%;"></div>
+    </div>
+    <div class="composite-hero-strength">
+      <span class="strength-badge strength-badge-{{ t }}">
+        <span class="strength-dot strength-dot-{{ t }}"></span>{{ TIER_LABELS[t] }}
+      </span>
+      <span class="composite-hero-strength-note">
+        Communication Strength — reflects how confident and transparent management was on
+        this call, not whether the stock is attractive.
+      </span>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro dimension_bars(row) %}
+{% set dims = [
+  ('Guidance', row.guidance_score),
+  ('Hedging', row.hedging_score),
+  ('Q&A directness', row.qa_directness_score),
+  ('Consistency', row.consistency_score),
+  ('Headwinds', row.headwinds_score),
+] %}
+<div class="dim-bars">
+  {% for label, score in dims %}
+  {% set t = score|tier(80, 60) %}
+  <div class="dim-bar-row" title="{{ label }}: {{ score|round(0) }}/100 ({{ TIER_LABELS[t] }})">
+    <span class="dim-bar-label">{{ label }}</span>
+    <div class="dim-bar-track"><div class="dim-bar-fill strength-fill-{{ t }}" style="width: {{ score }}%;"></div></div>
+    <span class="dim-bar-value">{{ score|round(0)|int }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro evidence_card(row) %}
+{% if row.evidence and row.evidence.excerpt %}
+<div class="evidence-card">
+  <div class="evidence-eyebrow">Evidence — {{ row.evidence.notable_dimension }} ({{ row.evidence.notable_score|round(0)|int if row.evidence.notable_score is not none else "?" }}/100)</div>
+  <div class="excerpt" style="border-left:none; padding-left:0; margin:0;">
+    {{ row.evidence.excerpt }}
+    <span class="speaker">{{ row.evidence.speaker }}</span>
+  </div>
+  {% if row.evidence.why %}
+  <div class="why">{{ row.evidence.why }}</div>
+  {% endif %}
+</div>
+{% endif %}
+{% if row.scorer_notes %}
+<p class="section-note" style="margin-top:10px;">{{ row.scorer_notes }}</p>
+{% endif %}
+{% if row.rubric_version %}
+<p class="section-note">Rubric version: {{ row.rubric_version }}</p>
+{% endif %}
+{% endmacro %}
+
+{% macro score_summary_line(row) %}
+<span class="summary-scores">
+  <span>guidance <b>{{ row.guidance_score|int }}</b></span>
+  <span>hedging <b>{{ row.hedging_score|int }}</b></span>
+  <span>qa_directness <b>{{ row.qa_directness_score|int }}</b></span>
+  <span>consistency <b>{{ row.consistency_score|int }}</b></span>
+  <span>headwinds <b>{{ row.headwinds_score|int }}</b></span>
+</span>
+<span class="summary-composite strength-text-{{ row.transcript_composite|tier(75, 60) }}">{{ row.transcript_composite|round(1) }}</span>
+{% endmacro %}
+
+{% macro score_legend(open_by_default=False) %}
+<details class="score-legend"{% if open_by_default %} open{% endif %}>
+  <summary>What do these scores mean?</summary>
+  <table class="legend-table">
+    <thead><tr><th>Range</th><th>Reads as</th><th>Looks like</th></tr></thead>
+    <tbody>
+      <tr><td class="num">80–100</td><td><span class="strength-dot strength-dot-strong"></span>Strong</td><td>Guidance raised, direct answers, transparent</td></tr>
+      <tr><td class="num">60–79</td><td><span class="strength-dot strength-dot-neutral"></span>Solid</td><td>Professional, some hedging, mostly straightforward</td></tr>
+      <tr><td class="num">40–59</td><td><span class="strength-dot strength-dot-caution"></span>Mixed</td><td>Noticeable caution, some deflection, or mixed messages</td></tr>
+      <tr><td class="num">20–39</td><td><span class="strength-dot strength-dot-caution"></span>Weak</td><td>Evasive, heavily hedged, or significant divergence</td></tr>
+      <tr><td class="num">&lt;20</td><td><span class="strength-dot strength-dot-caution"></span>Concerning</td><td>Explicit avoidance, major red flags</td></tr>
+    </tbody>
+  </table>
+  <p class="section-note" style="margin-top:8px; margin-bottom:0;">
+    This is a per-score reading (works for any dimension or the composite). The colored dots
+    used elsewhere on this site simplify these 5 tiers into 3 (green/gray/amber) for scanning
+    at a glance — Mixed, Weak, and Concerning all render as the same amber, distinguished by
+    the label and number rather than a fourth or fifth color.
+  </p>
+</details>
+{% endmacro %}

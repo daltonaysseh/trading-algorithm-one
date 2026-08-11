@@ -1,0 +1,233 @@
+# Structured log of real data-quality/methodology issues found during this
+# project, in the order discovered. Rendered directly by the site's
+# Limitations page (src/site/build.py) -- this file is the source of truth,
+# not the HTML. Add a new entry here whenever a new issue is found; don't
+# hand-edit the generated site/limitations.html.
+#
+# severity: high | medium | low
+# status: excluded (row dropped from analysis) | documented (kept, flagged)
+#         | monitoring (not yet resolved, watching for recurrence)
+
+issues:
+  - title: "MAJOR PIVOT: backtest research cancelled in favor of a live analyzer"
+    severity: high
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      This project began as a backtest (does earnings-call sentiment predict
+      forward stock returns?) with a 10-ticker validated batch, 183 ingested
+      transcripts, and a scale-up scoring effort (18/183 done when the pivot
+      landed). That work is cancelled, not paused -- the new goal is a live
+      tool that analyzes any ticker's most recent call on demand, framed as
+      a communication-quality read for analyst research, not a return-
+      prediction system. The 10 already-scored transcripts were kept as
+      rubric reference/proof-of-concept examples (see the Examples page);
+      Phase 3 (price data) and Phase 4 (backtest) were never started and are
+      now off the roadmap. The rubric itself (config/rubric.md v2) carried
+      forward unchanged into the live tool.
+    affected_scope: "Whole project direction"
+
+  - title: "Rubric hasn't been independently audited at scale"
+    severity: high
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      The 5-dimension rubric (guidance, hedging, qa_directness, consistency,
+      headwinds) is adapted from an earlier, separate project (Equity
+      Research) that had no written scoring criteria at all -- only column
+      names. This project supplied written criteria (config/rubric.md) and
+      sharpened two dimensions after measuring real compression (see the
+      qa_directness/consistency entry below), but there's been no
+      independent audit of live-tool scores against a second scorer's
+      judgment, no inter-rater check, and no systematic spot-check across a
+      large sample of live analyses. Treat every score as a structured first
+      read, not an audited measurement.
+    affected_scope: "All scoring, all tickers"
+
+  - title: "Live-analyzer scoring consistency with the reference examples is unverified"
+    severity: medium
+    status: monitoring
+    date_found: "2026-08-11"
+    description: >
+      The 10 calibration examples and all future live analyses are scored by
+      the same process (Claude reading the transcript against rubric.md
+      inside a session) -- there's no separate automated scorer to check
+      against, and no formal re-test of whether live analyses land on the
+      same scale as the reference examples did. Worth a periodic spot check:
+      re-analyze one of the 10 reference tickers' same historical quarter
+      and confirm the score lands close to its recorded calibration score.
+    affected_scope: "All live analyses"
+
+  - title: "Two tickers (MLI, NHC) had no transcripts on either source -- a live-tool failure mode too"
+    severity: medium
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      Mueller Industries (MLI) and National HealthCare Corp (NHC) were the
+      original picks for the Industrials and Health Care slots in the old
+      validation batch. Neither has a transcript on stockanalysis.com or
+      fool.com -- confirmed, not just a coverage gap; replaced in the batch
+      at the time. This same failure mode applies to the live analyzer now:
+      any thinly-covered ticker a user asks about can hit it, which is why
+      fetch_latest.py returns an explicit "not found" status rather than
+      failing silently or fabricating a report.
+    affected_scope: "Any live analysis of a thin-coverage ticker"
+
+  - title: "SCVL ticker renamed to SHOE mid-2026"
+    severity: low
+    status: monitoring
+    date_found: "2026-08-11"
+    description: >
+      Shoe Carnival, Inc. changed its name to Shoe Station Group and its
+      Nasdaq ticker from SCVL to SHOE, effective 2026-06-12 -- a real,
+      confirmed corporate action. Handled: the underlying lookup
+      (list_stockanalysis.py, reused by the live analyzer) follows
+      stockanalysis.com's own redirect from the old symbol, so searching
+      "SCVL" live still resolves correctly. Noted here mainly as an example
+      of the kind of ticker-identity change the live tool needs to keep
+      handling as more renames happen over time.
+    affected_scope: "SCVL/SHOE lookups"
+
+  - title: "Prepared-remarks/Q&A split had a real bug affecting ~46% of transcripts"
+    severity: high
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      Caught before any scoring happened, by hand-reading a transcript
+      (CSGS Q2 2025) before scoring it, per an explicit instruction to pair
+      scores with real excerpts. The original phrase-matching split logic
+      mismatched a Python truthiness check (`if qa_start_idx else ...`
+      silently mishandled a legitimate index of 0) and also false-matched
+      an operator's or executive's own PREVIEW of the Q&A session (e.g. a
+      CFO's closing line "I'll turn it over to the operator to facilitate
+      the Q&A") as if that were the Q&A starting. This affected 84 of 183
+      (46%) stockanalysis.com-sourced transcripts before being fixed.
+      Replaced with a structural method: each source turn carries the
+      speaker's employer; the first turn whose employer differs from the
+      reporting company's own (i.e. an outside analyst) reliably marks the
+      real Q&A start. Final state: 179/183 (97.8%) verified real splits.
+    affected_scope: "Was 84/183 transcripts; now 4/183 (see next entry)"
+
+  - title: "4 UTL transcripts have no Q&A content in the source data at all"
+    severity: low
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      UTL Q1 2023, Q2 2023, Q3 2022, and Q1 2025 end immediately after the
+      operator's Q&A instructions, with zero analyst turns anywhere in the
+      source data -- confirmed by hand, not a detection failure. Most likely
+      genuine (very light analyst coverage for a small utility) rather than
+      a transcription gap. The live analyzer handles this the same way:
+      scores on full text only when no Q&A turns are found, rather than
+      forcing a split that doesn't exist.
+    affected_scope: "Any thin-coverage ticker with no analyst Q&A in a given quarter"
+
+  - title: "One transcript has upstream-mislabeled content (USPH \"Q3 2025\")"
+    severity: medium
+    status: excluded
+    date_found: "2026-08-11"
+    description: >
+      The DB row labeled USPH Q3 2025 (call_date 2025-11-06) contains the
+      text of the Q2 2025 call instead -- explicit "Second Quarter 2025
+      Earnings Call" self-statement, April/May/June visit data discussed.
+      Verified this isn't a local duplicate (distinct from the correctly-
+      labeled USPH Q2 2025 row). Most likely an upstream stockanalysis.com/
+      Quartr content-serving error. Found via a systematic self-consistency
+      check (each transcript's own stated quarter vs its DB label) run
+      across all 183 rows after this specific failure mode was caught by
+      hand-reading the transcript before scoring. Excluded from scoring;
+      the reference example shown for USPH on this site is for the
+      correctly-labeled Q2 2025 transcript instead. Worth remembering for
+      the live tool too -- always worth a sanity check that the transcript's
+      own self-stated quarter matches what was asked for.
+    affected_scope: "USPH \"Q3 2025\" row only (1 of 183) -- flagged in DB via data_quality_flag"
+
+  - title: "One transcript has a source diarization defect (SHEN Q3 2025)"
+    severity: low
+    status: monitoring
+    date_found: "2026-08-11"
+    description: >
+      The source data merged the operator's introduction of the first
+      analyst (Frank Loudon) and his entire question into the Operator's
+      own turn object, with no distinct speaker/company tag. The structural
+      Q&A-split method correctly found the *second* analyst but missed the
+      first, so that one exchange landed in the "prepared_remarks" bucket
+      for this transcript. Not auto-detectable at scale from the data
+      available; noted as a residual limitation category rather than
+      individually patched.
+    affected_scope: "SHEN Q3 2025 only -- one exchange misclassified"
+
+  - title: "Quant fundamentals scoring (stock_scorer.py integration) was dropped in the pivot"
+    severity: low
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      An earlier iteration added a quant-fundamentals snapshot (composite +
+      Quality/Growth/Valuation/Financial Health, via a reused stock_scorer.py
+      from the sibling Equity Research project) to each ticker's report page.
+      That work (src/scoring/run_quant_scorer.py, data/processed/quant_scores.json)
+      still exists on disk but is no longer wired into the live analyzer --
+      the pivot's scope is communication-quality analysis only. Two real
+      issues were found while it was active (sector-relative ranking
+      degenerating to whole-batch ranking with only 1 ticker/sector; a
+      yfinance 404 for CSGS that would have silently produced a fake 0.0
+      score before being caught) -- noted here for history in case this
+      feature is revived.
+    affected_scope: "Dead code, not rendered anywhere currently"
+
+  - title: "Older fool.com transcripts have a speaker-attribution parsing defect"
+    severity: low
+    status: monitoring
+    date_found: "2026-08-11"
+    description: >
+      SCVL_Q1_2021 (and likely other fool.com-sourced transcripts using the
+      same older ~2021-era page template) has every line tagged [Operator]
+      in the raw JSON, regardless of actual speaker -- fool_fetch.py's
+      speaker-detection logic (looks for a standalone `<p><strong>Name</strong></p>`
+      tag) doesn't match this older template's HTML structure, so
+      `current_speaker` never updates from its initial "Operator" default.
+      Content and paragraph-level text are still fully intact and readable
+      (verified by hand-reading SCVL_Q1_2021 before scoring) -- this is
+      cosmetic to the `speaker` field only, doesn't block scoring, but any
+      downstream code that trusts `speaker` for these rows will be wrong.
+      Not yet checked systematically across all 23 fool.com-sourced rows;
+      flagging as "monitoring" until that sweep happens.
+    affected_scope: "fool.com-sourced transcripts on the older page template (at least SCVL_Q1_2021; extent across the other 22 fool.com rows not yet checked)"
+
+  - title: "qa_directness/consistency anchors were too compressed to discriminate (fixed, v2)"
+    severity: medium
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      Before scaling past the 10-transcript calibration batch, measured
+      whether qa_directness/consistency showed real discrimination or just
+      clustered around one outlier. They clustered: excluding PBF (the one
+      unambiguous case), consistency had a 10-point range and stdev 4.4
+      across the other 9 transcripts (75/80/85 only), qa_directness stdev
+      7.0 -- while guidance/hedging spread across their full range (stdev
+      12-15) with no single-outlier dependency. The rubric was functioning
+      as a binary "blatant stonewalling" detector on these two dimensions,
+      not a continuous scale -- a real problem for comparing calls to each
+      other meaningfully, which needs separation across the whole
+      distribution, not just at one extreme. Fixed by
+      expanding both dimensions from a 3-point (20/50/80) to a 6-point
+      anchor (see config/rubric.md v2) and re-scoring all 10 calibration
+      transcripts under it. Result: qa_directness stdev 14.0 -> 18.4,
+      consistency stdev 12.9 -> 19.0, and PBF's composite correctly dropped
+      further from the pack (42 -> 36) instead of being pulled toward it by
+      a compressed scale. All 183 transcripts (the original 10 re-scored,
+      the remaining 173 scored fresh) use v2.
+    affected_scope: "qa_directness and consistency dimensions, all 183 transcripts"
+
+  - title: "Each live analysis is a single read, not a repeated-measures average"
+    severity: low
+    status: documented
+    date_found: "2026-08-11"
+    description: >
+      One transcript gets scored once, by one read. There's no ensembling,
+      no re-scoring for stability, and no confidence interval on any score --
+      a genuinely borderline call (e.g. a guidance score right between two
+      anchor points) could land a few points differently on a re-read.
+      Treat single-point scores as approximate, especially for values close
+      to a rubric anchor boundary.
+    affected_scope: "All live analyses"

@@ -1,0 +1,205 @@
+# Real excerpts backing the 10 calibration scores, keyed by ticker/quarter.
+# Used by both the Rubric page (one excerpt per dimension, the clearest
+# illustrative case found in the calibration batch) and the Tickers page
+# (1-2 excerpts per ticker justifying its most notable score). All text
+# is verbatim from data/raw/transcripts/ -- read in full before scoring,
+# per the "pair scores with real excerpts" instruction this session.
+
+# One excerpt per dimension for the Rubric page.
+rubric_dimension_examples:
+  guidance:
+    ticker: SXI
+    quarter: "Q1 2026"
+    score: 85
+    speaker: "David Dunbar, Chairman & CEO"
+    excerpt: >
+      "We are raising our fiscal Year 2026 sales outlook. Barring unforeseen
+      economic, global trade, or tariffs-related disruptions, we now expect
+      revenue to grow by over $110 million. $10 million more than we
+      communicated last quarter."
+    why: >
+      A specific, numbered raise to forward guidance -- the clearest
+      strong-guidance example in the calibration batch.
+
+  hedging:
+    ticker: PBF
+    quarter: "Q3 2025"
+    score: 30
+    speaker: "Joe Marino, CFO"
+    excerpt: >
+      "That's an interesting question. Obviously, there'd be a lot of
+      different factors playing into the market... I think it's hard to
+      specifically answer that question down to a fine detail... We don't
+      have an exact impact of what that would look like at this point."
+    why: >
+      Asked directly to normalize net debt for one-time items, twice --
+      answered both times with qualifiers instead of a number. The clearest
+      low-hedging-score example (i.e. heavily hedged language) in the batch.
+
+  qa_directness:
+    ticker: WSFS
+    quarter: "Q3 2025"
+    score: 90
+    speaker: "David Burg, CFO"
+    excerpt: >
+      "I would characterize that as about 3 basis points per 25 basis point
+      rate cut... when you think about the net interest margin this quarter,
+      we were at 3.91. We had the one interest recovery. If you kind of
+      normalize for that, we're in the high 3.80s. With a couple of few rate
+      cuts that go into the fourth quarter, we would tick down to maybe
+      about 3.80."
+    why: >
+      A margin-sensitivity question answered with exact basis-point figures
+      and a worked-through calculation, not a general statement.
+
+  consistency:
+    ticker: PBF
+    quarter: "Q3 2025"
+    score: 20
+    speaker: "Matt Lucey, CEO (prepared remarks) vs. Joe Marino, CFO (Q&A)"
+    excerpt: >
+      Prepared remarks: "...all of which should come together to create a
+      dynamic environment for the company and our shareholders."
+      Q&A (same call, same underlying question asked twice): "It's hard to
+      put a fine point on that... we don't have an exact impact of what that
+      would look like at this point."
+    why: >
+      The clearest prepared-remarks-vs-Q&A divergence in the batch --
+      confident, upbeat framing in the scripted portion, evasive on the one
+      specific number analysts pressed for in Q&A. Exactly the pattern the
+      consistency dimension is designed to catch.
+
+  headwinds:
+    ticker: MTX
+    quarter: "Q3 2025"
+    score: 85
+    speaker: "Erik Aldag, CFO"
+    excerpt: >
+      "Versus the third quarter last year, we've done well to offset $10
+      million of higher costs, including tariff costs, raw material
+      increases, energy, and temporary increases like higher logistics
+      costs associated with our U.S. cat litter plant upgrade."
+    why: >
+      Risks named specifically and quantified in dollar terms, rather than
+      described generically -- the rubric's 80-anchor for headwinds.
+
+# All 10 calibration transcripts, with 1-2 excerpts each for the Tickers page.
+tickers:
+  - ticker: CSGS
+    quarter: "Q2 2025"
+    composite: 78
+    notable_dimension: qa_directness
+    notable_score: 85
+    speaker: "Hai Tran, CFO"
+    excerpt: >
+      "One of the things that you know we talked about in the prepared
+      remarks... is the adverse currency impacts, most of which are kind of
+      on the balance sheet basis... without that negative FX impact, you
+      would have seen the 13% EPS year-over-year growth in the first half be
+      even bigger."
+
+  - ticker: MTX
+    quarter: "Q3 2025"
+    composite: 72
+    notable_dimension: headwinds
+    notable_score: 85
+    speaker: "Erik Aldag, CFO"
+    excerpt: >
+      "Versus the third quarter last year, we've done well to offset $10
+      million of higher costs, including tariff costs, raw material
+      increases, energy, and temporary increases like higher logistics
+      costs."
+
+  - ticker: PBF
+    quarter: "Q3 2025"
+    composite: 36
+    notable_dimension: consistency
+    notable_score: 20
+    speaker: "Joe Marino, CFO"
+    excerpt: >
+      Asked twice by the same analyst to normalize net debt for one-time
+      items: "It's hard to put a fine point on that... we don't have an
+      exact impact of what that would look like at this point." Lowest
+      composite score in the calibration batch.
+
+  - ticker: SCVL
+    quarter: "Q1 2026"
+    composite: 72
+    notable_dimension: guidance
+    notable_score: 70
+    speaker: "Mark Worden, President & CEO"
+    excerpt: >
+      "We will complete all 75 rebounders this year, the top point of the
+      range... Today, I'm announcing an ambitious expansion. Shoe Station
+      will represent over 80% of our store fleet by March 2027, up from our
+      previous target of 51%."
+
+  - ticker: SHEN
+    quarter: "Q3 2025"
+    composite: 70
+    notable_dimension: headwinds
+    notable_score: 70
+    speaker: "Jim Volk, CFO"
+    excerpt: >
+      "Incumbent broadband markets revenue declined $1.6 million, primarily
+      due to a 15% decline in video RGUs due to customers switching to
+      streaming video services."
+
+  - ticker: SXI
+    quarter: "Q1 2026"
+    composite: 81
+    notable_dimension: guidance
+    notable_score: 85
+    speaker: "David Dunbar, Chairman & CEO"
+    excerpt: >
+      "We are raising our fiscal Year 2026 sales outlook... we now expect
+      revenue to grow by over $110 million. $10 million more than we
+      communicated last quarter." Highest composite score in the
+      calibration batch.
+
+  - ticker: USPH
+    quarter: "Q2 2025"
+    composite: 82
+    notable_dimension: headwinds
+    notable_score: 80
+    speaker: "Chris Reading, CEO"
+    excerpt: >
+      "The impact in this year on those stacked [Medicare] cuts is right
+      around $25 million. That's straight off profit line. It's been a huge
+      impact." Named and quantified rather than minimized, despite raising
+      guidance the same call.
+
+  - ticker: UTL
+    quarter: "Q3 2025"
+    composite: 64
+    notable_dimension: qa_directness
+    notable_score: 70
+    speaker: "Daniel Hurstak, SVP & CFO"
+    excerpt: >
+      "The difference between the $1.2 [billion] in rate base on slide 19
+      and the $1.4 [billion] of rate base on slide 5 reflects the additional
+      rate base for the acquired companies: Maine Natural Gas, Bangor
+      Natural Gas, and Aquarion."
+
+  - ticker: WSFS
+    quarter: "Q3 2025"
+    composite: 78
+    notable_dimension: qa_directness
+    notable_score: 90
+    speaker: "David Burg, CFO"
+    excerpt: >
+      "I would characterize that as about 3 basis points per 25 basis point
+      rate cut... we would tick down to maybe about 3.80." Highest
+      qa_directness score in the calibration batch.
+
+  - ticker: JJSF
+    quarter: "Q4 2025"
+    composite: 64
+    notable_dimension: qa_directness
+    notable_score: 65
+    speaker: "Dan Fachner, CEO"
+    excerpt: >
+      Asked directly about M&A plans following a mention of "M&A in the
+      pipeline": "I wouldn't go that far, John... I would not go as far as
+      to see anything imminent on the M&A front." A real, if minor,
+      deflection.

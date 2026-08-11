@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Earnings Sentiment Analyzer{% endblock %} — Trading Algorithm One</title>
+  <link rel="stylesheet" href="{{ base_href }}assets/style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="layout">
+      <a class="brand" href="{{ base_href }}index.html">Earnings-Call Sentiment Analyzer
+        <span class="sub">Communication-quality reads for analyst research — not investment advice</span>
+      </a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
+      <div class="nav-right">
+        <label for="nav-toggle" class="nav-toggle-label">Menu</label>
+        <ul>
+          <li><a href="{{ base_href }}index.html" class="{{ 'active' if active == 'overview' else '' }}">Overview</a></li>
+          <li><a href="{{ base_href }}how-it-works.html" class="{{ 'active' if active == 'how_it_works' else '' }}">How It Works</a></li>
+          <li><a href="{{ base_href }}rubric.html" class="{{ 'active' if active == 'rubric' else '' }}">Rubric</a></li>
+          <li><a href="{{ base_href }}tickers.html" class="{{ 'active' if active == 'tickers' else '' }}">Examples</a></li>
+          <li><a href="{{ base_href }}recent-analyses.html" class="{{ 'active' if active == 'recent_analyses' else '' }}">Recent</a></li>
+          <li><a href="{{ base_href }}limitations.html" class="{{ 'active' if active == 'limitations' else '' }}">Limitations</a></li>
+        </ul>
+        <div class="ticker-search">
+          <input type="text" placeholder="Search analyzed tickers…" autocomplete="off"
+                 aria-label="Search analyzed tickers" aria-expanded="false" role="combobox">
+          <div class="ticker-search-panel" hidden></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="layout">
+    {% block content %}{% endblock %}
+    <footer class="site-footer">
+      Generated {{ build_time }} from data/processed/analyzed_calls.db, data/processed/transcripts.db
+      (calibration examples), and config/*.yaml — regenerate with <code>python src/site/build.py</code>
+      after any new analysis. This is a communication-quality research tool; nothing on this site is
+      investment advice or a prediction of stock price movement.
+    </footer>
+  </div>
+  <script src="{{ base_href }}assets/search.js" data-search-index="{{ base_href }}assets/search-index.json" data-base-href="{{ base_href }}"></script>
+</body>
+</html>

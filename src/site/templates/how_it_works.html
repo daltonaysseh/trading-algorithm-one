@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}How It Works{% endblock %}
+{% block content %}
+<h1>How this works</h1>
+<p class="lede">
+  Every analyzed call is read in full and scored 0–100 on five independently-judged
+  communication dimensions. The composite score is just their mean — it isn't a separate,
+  independently-judged number. This page explains what each dimension is actually looking
+  for, why it's relevant to equity research, and what it looked like in three real calls.
+</p>
+
+<div class="callout is-isnt-callout">
+  <div class="is-isnt-row">
+    <div>
+      <strong>What this IS</strong>
+      <p class="section-note" style="margin-top:4px;">
+        A read of how confident and transparent management sounded on one specific call —
+        the actual dimension scores, tied to real quotes from the transcript.
+      </p>
+    </div>
+    <div>
+      <strong>What this ISN'T</strong>
+      <p class="section-note" style="margin-top:4px;">
+        A stock price predictor, a buy/sell signal, a substitute for reading or listening to
+        the actual call, or investment advice of any kind.
+      </p>
+    </div>
+  </div>
+</div>
+
+<h2>The five dimensions</h2>
+<div class="dim-grid">
+  {% for dim in dimensions %}
+  <div class="card dim-explainer">
+    <h3>{{ dim.label }}</h3>
+    <p class="dim-hook">{{ dim.hook }}</p>
+    <p class="section-note">{{ dim.why_it_matters }}</p>
+    {% set ex = examples[dim.key] %}
+    {% if ex %}
+    <div class="excerpt">
+      {{ ex.excerpt }}
+      <span class="speaker">{{ ex.speaker }} — {{ ex.ticker }} {{ ex.quarter }} · scored {{ ex.score }}/100 on this dimension</span>
+    </div>
+    <div class="why">{{ ex.why }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Three real calls</h2>
+<p class="section-note">
+  One low, one solid, one strong — real scores from calls actually analyzed by this tool
+  (plus one calibration example, PBF's prior quarter, since none of the live analyses so
+  far scored low enough to honestly illustrate that end of the range).
+</p>
+<div class="case-study-grid">
+  {% for cs in case_studies %}
+  <div class="card case-study">
+    <div class="case-study-head">
+      <span class="cs-ticker">{{ cs.ticker }}</span>
+      <span class="cs-quarter">{{ cs.quarter }}</span>
+      <span class="strength-badge strength-badge-{{ cs.tier }}">
+        <span class="strength-dot strength-dot-{{ cs.tier }}"></span>{{ TIER_LABELS[cs.tier] }}
+      </span>
+      <span class="cs-composite">{{ cs.composite|round(0)|int }}<span class="cs-composite-max">/100</span></span>
+    </div>
+    <p class="section-note" style="margin-top:10px;">{{ cs.what_happened }}</p>
+    {% if cs.report_path %}
+    <a href="{{ cs.report_path }}">View full report →</a>
+    {% else %}
+    <p class="section-note" style="margin-top:8px; margin-bottom:0;">
+      Calibration example — see <a href="tickers.html">Examples</a> for the full rubric-development set.
+    </p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Score legend</h2>
+{{ macros.score_legend(open_by_default=True) }}
+{% endblock %}

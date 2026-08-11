@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Limitations{% endblock %}
+{% block content %}
+<h1>Data quality &amp; limitations</h1>
+<p class="lede">
+  Every real problem found while building this pipeline, logged as it was found.
+  This is a research project, not a pitch — if something here would change how
+  you read the Results page once it exists, that's the point of listing it.
+</p>
+
+{% for sev in ['high', 'medium', 'low'] %}
+{% set items = issues|selectattr('severity', 'equalto', sev)|list %}
+{% if items %}
+<h2><span class="sev sev-{{ sev }}">{{ sev }} severity</span></h2>
+{% for issue in items %}
+<div class="card">
+  <h3>{{ issue.title }}</h3>
+  <p class="section-note">
+    <span class="badge badge-{{ issue.status }}">{{ issue.status }}</span>
+    &nbsp;·&nbsp; found {{ issue.date_found }}
+    &nbsp;·&nbsp; affects: {{ issue.affected_scope }}
+  </p>
+  <p>{{ issue.description }}</p>
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endblock %}

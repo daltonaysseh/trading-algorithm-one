@@ -1,0 +1,147 @@
+# Ticker universe(s) for this project. Single source of truth — code should
+# read this file rather than hardcoding ticker lists.
+
+# Full 30-ticker mega-cap universe, sourced from ../Equity Research/quant_screen.csv
+# (tickers only — the sentiment scores/rubric in that project were NOT reused;
+# see config/rubric.md for the rubric actually applied here).
+# Not used for the current hypothesis test run — reserved for later scale-up.
+full_universe:
+  - AAPL
+  - AMZN
+  - BA
+  - BAC
+  - CAT
+  - COST
+  - CVX
+  - DE
+  - DIS
+  - GOOGL
+  - GS
+  - HD
+  - HON
+  - JNJ
+  - JPM
+  - KO
+  - LLY
+  - MA
+  - MCD
+  - META
+  - MSFT
+  - NKE
+  - NVDA
+  - PEP
+  - PFE
+  - PG
+  - UNH
+  - UPS
+  - V
+  - WMT
+  - XOM
+
+# Validation batch — approved 2026-08-11. Deliberately smaller/under-covered
+# names across 10 GICS sectors, on the hypothesis that less analyst coverage
+# means earnings-call sentiment is less likely to already be priced in by
+# the time the transcript posts. Used to prove out the pipeline end-to-end
+# and run the first hypothesis test before deciding whether to scale to
+# full_universe.
+# Finalized 2026-08-11 after data-availability audit. MLI and NHC were
+# dropped (no transcripts on stockanalysis.com OR fool.com -- true dead
+# ends, not just gaps) and replaced with verified alternatives in the same
+# sectors. SCVL kept despite sparse coverage per explicit decision (see
+# note on that entry) -- ticker renamed to SHOE 2026-06-12 (real corporate
+# action; postdates our window, only matters for Phase 3 price continuity).
+validation_batch:
+  - ticker: PBF
+    company: PBF Energy
+    sector: Energy
+  - ticker: MTX
+    company: Minerals Technologies
+    sector: Materials
+  - ticker: SXI
+    company: Standex International
+    sector: Industrials
+    note: "Replaces MLI (Mueller Industries) -- MLI has no transcripts on stockanalysis.com or fool.com."
+  - ticker: SCVL
+    company: Shoe Carnival (renamed Shoe Station Group / SHOE, 2026-06-12)
+    sector: Consumer Discretionary
+    note: "Sparse by nature -- only 5 transcript-quarters found across both sources for 2019-2025, vs ~19-28 for other tickers. Kept as-is per explicit decision (2026-08-11) rather than replaced or padded."
+  - ticker: JJSF
+    company: J&J Snack Foods
+    sector: Consumer Staples
+  - ticker: USPH
+    company: US Physical Therapy
+    sector: Health Care
+    note: "Replaces NHC (National HealthCare Corp) -- NHC has no transcripts on stockanalysis.com or fool.com."
+  - ticker: WSFS
+    company: WSFS Financial
+    sector: Financials
+  - ticker: CSGS
+    company: CSG Systems International
+    sector: Information Technology
+  - ticker: SHEN
+    company: Shenandoah Telecommunications
+    sector: Communication Services
+  - ticker: UTL
+    company: Unitil Corp
+    sector: Utilities
+
+# Actual ingested counts, 2026-08-11 (see src/ingest/run_ingest.py):
+# PBF 28, SXI 20, WSFS 21, MTX 19, USPH 19, UTL 19, CSGS 18, JJSF 17,
+# SHEN 17, SCVL 5. Total 183 transcript-quarters. Sources: stockanalysis.com
+# (2021+, via their internal __data.json endpoint) + fool.com (2019 through
+# each ticker's stockanalysis.com coverage start, ~2021-2022).
+#
+# prepared-remarks/Q&A split, final state 2026-08-11: caught and fixed a real
+# bug before any scoring happened (per your instruction to pair scores with
+# real excerpts -- read CSGS_Q2_2025 by hand and found its qa.txt empty
+# despite qa_split_found=True). Root cause was phrase-matching on operator
+# transition language, which silently mis-split ~46% of stockanalysis.com
+# transcripts (84/183) at various points -- e.g. matched a CFO's own closing
+# line referencing the "question and answer session" as if that were the
+# session starting. Replaced with a structural method: each turn in the
+# source data carries the speaker's employer (`company` field); management
+# turns all share the reporting company's name, so the first turn whose
+# company differs (an outside analyst) reliably marks the true Q&A start --
+# no phrase-guessing. Final result: 179/183 (97.8%) verified real splits.
+# Remaining 4 (all UTL: Q1 2023, Q2 2023, Q3 2022, Q1 2025) are a genuine
+# upstream data gap, not a detection failure -- confirmed by hand: the
+# operator gives Q&A instructions and the transcript simply ends, no analyst
+# turns exist in the source at all (small-cap, thin coverage). These 4 are
+# scored on full text only in Phase 2, not split.
+
+benchmark: SPY
+
+history_window:
+  start: "2019-01-01"
+  end: "2025-12-31"
+  max_quarters_per_ticker: 24
+
+# Chronological split (NOT random) — set once actual transcript dates are
+# known per ticker; recorded here after Phase 1 ingestion completes.
+in_sample_out_sample_split:
+  method: chronological_70_30
+  in_sample_end: null   # filled in after ingestion, before any Phase 4 analysis
+  note: "No row from the out-of-sample period may be viewed or used to tune anything until Phase 4 in-sample analysis is finalized and reported."
+
+# public_availability_ts methodology — approved 2026-08-11 after live testing
+# showed stockanalysis.com exposes no publish timestamp (checked DOM/meta/JSON-LD)
+# and Wayback Machine has zero coverage of these pages (checked both a 12-day-old
+# and a 5-year-old transcript URL). SEC EDGAR 8-Ks were also checked and do not
+# carry the transcript itself (only press release + supplement), so they cannot
+# substitute either -- confirmed on WSFS's 2026-07-23 8-K (accession
+# 0000828944-26-000026), which has exhibits exhibit991earningsrelease0.htm and
+# a2q26supplement72326vf.htm, no transcript.
+timestamp_methodology:
+  primary: "call_date + per_transcript_lag, where per_transcript_lag is read from
+            the search-engine index freshness signal (e.g. Firecrawl 'N days ago')
+            captured at ingestion time, when available (mainly recent quarters)."
+  fallback: "call_date + 7 calendar days, when no freshness signal is available
+             (older transcripts). Calibrated from 2 data points: WSFS ~6 days,
+             SHEN ~8 days -- small sample, treated as a rough default, not a
+             precise estimate."
+  sensitivity_test: "Phase 4 hypothesis test is run at 0 / 3 / 7 trading-day lag
+                      assumptions. Any result that only appears under one specific
+                      lag assumption is reported as a lag-assumption artifact, not
+                      a finding."
+  limitation: "This is an estimated proxy, not an observed timestamp. Must be
+               named explicitly as a limitation in the final report."
