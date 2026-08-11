@@ -1,0 +1,4 @@
+# src/site/build.py's actual dependencies (sqlite3, shutil, json, pathlib,
+# datetime are all standard library -- not listed here, nothing to install).
+Jinja2>=3.1
+PyYAML>=6.0

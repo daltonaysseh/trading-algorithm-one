@@ -3,11 +3,19 @@
 data/raw/transcripts/
 data/raw/live_transcripts/
 
-# SQLite databases — derived/regeneratable via the scoring + analyzer
-# pipeline, not source-controlled. (site/ HTML output is generated from
-# these and is committed instead, since that's the actual deployable.)
-*.db
+# SQLite databases — tracked, not ignored. build.py reads these directly
+# (data/processed/transcripts.db, data/processed/analyzed_calls.db) and
+# GitHub Actions rebuilds site/ from them on every push, so they have to
+# travel with the repo or CI has nothing to build from (an empty/missing
+# db there would silently deploy a site with zero analyzed calls, or
+# crash outright on the legacy db's missing schema). Only journal files
+# (transient, never wanted) stay ignored.
 *.db-journal
+
+# Generated site output — no longer committed. GitHub Actions
+# (.github/workflows/deploy.yml) rebuilds this from the tracked DBs +
+# config/*.yaml on every push to main and deploys it to GitHub Pages.
+site/
 
 # Secrets — no secret files exist in this repo today, but guard against
 # accidental future commits (API keys, tokens, local env overrides).
